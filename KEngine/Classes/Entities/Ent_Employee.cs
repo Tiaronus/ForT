@@ -35,15 +35,16 @@ namespace KEngine.Classes.Entities
         }
 
 
-        public override void Delete()
+        public override bool Delete()
         {
             if (ID != null)
             {
                 SQLiteCommand cmd = DB_Bridge.Instance.CreateCommand();
                 cmd.CommandText = "delete from tbl_employees where id = @ID";
                 cmd.Parameters.Add(new SQLiteParameter("ID", ID));
-                DB_Bridge.Instance.ExecuteNonQuery(cmd);
+                return DB_Bridge.Instance.ExecuteNonQuery(cmd);
             }
+            else return false;
         }
 
         public override ObservableCollection<Ent_Employee> LoadAll()
@@ -85,8 +86,9 @@ namespace KEngine.Classes.Entities
             return answer;
         }
 
-        public override void Save()
+        public override bool Save()
         {
+            
             SQLiteCommand cmd = DB_Bridge.Instance.CreateCommand();
             if (ID != null)
             {
@@ -107,8 +109,13 @@ namespace KEngine.Classes.Entities
                 cmd.Parameters.Add(new SQLiteParameter("PID", PositionID));
                 cmd.Parameters.Add(new SQLiteParameter("REM", DismissalRem));
             }
-            DB_Bridge.Instance.ExecuteNonQuery(cmd);
-            if (ID == null) ID = DB_Bridge.Instance.GetLastInsertId();
+            if (DB_Bridge.Instance.ExecuteNonQuery(cmd))
+            {
+                if (ID == null) ID = DB_Bridge.Instance.GetLastInsertId();
+                return true;
+            }
+            else return false;
+
         }
     }
 }

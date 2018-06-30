@@ -6,12 +6,12 @@ namespace KEngine.Classes.Entities
     public abstract class KBaseEntityGen<T> : KBaseEntity where T : KBaseEntity, new()
     {
         public abstract ObservableCollection<T> LoadAll();
-        public abstract void Save();
+        public abstract bool Save();
         public virtual T New()
         {
             return new T();
         }
-        public abstract void Delete();
+        public abstract bool Delete();
     }
 
     public abstract class KBaseEntity : INotifyPropertyChanged

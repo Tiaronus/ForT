@@ -144,9 +144,11 @@ namespace KEngine.Controls
             var v = _lbeMain.SelectedItem;
             if (v != null)
             {
-                ((T)v).Delete();
-                _mainSource.Remove(v as T);
-                _filteredSource.Remove(v as T);
+                if (((T)v).Delete())
+                {
+                    _mainSource.Remove(v as T);
+                    _filteredSource.Remove(v as T);
+                }
             }
             else KCore.ShowKError("Nothing Selected!");
         }

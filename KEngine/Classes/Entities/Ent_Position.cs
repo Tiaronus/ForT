@@ -17,7 +17,7 @@ namespace KEngine.Classes.Entities
 
         public Ent_Position()
         {
-            
+
         }
 
         public override ObservableCollection<Ent_Position> LoadAll()
@@ -35,33 +35,38 @@ namespace KEngine.Classes.Entities
             return answer;
         }
 
-        public override void Save()
+        public override bool Save()
         {
             SQLiteCommand cmd = DB_Bridge.Instance.CreateCommand();
             if (ID != null)
             {
                 cmd.CommandText = "update tbl_positions set nam = @N where id = @ID";
                 cmd.Parameters.Add(new SQLiteParameter("N", Nam));
-                cmd.Parameters.Add(new SQLiteParameter("ID", ID));                
+                cmd.Parameters.Add(new SQLiteParameter("ID", ID));
             }
             else
             {
                 cmd.CommandText = "insert into tbl_positions (nam) values (@N)";
                 cmd.Parameters.Add(new SQLiteParameter("N", Nam));
             }
-            DB_Bridge.Instance.ExecuteNonQuery(cmd);
-            if (ID == null) ID = DB_Bridge.Instance.GetLastInsertId();
+            if (DB_Bridge.Instance.ExecuteNonQuery(cmd))
+            {
+                if (ID == null) ID = DB_Bridge.Instance.GetLastInsertId();
+                return true;
+            }
+            else return false;
         }
 
-        public override void Delete()
+        public override bool Delete()
         {
-            if(ID != null)
+            if (ID != null)
             {
                 SQLiteCommand cmd = DB_Bridge.Instance.CreateCommand();
                 cmd.CommandText = "delete from tbl_positions where id = @ID";
                 cmd.Parameters.Add(new SQLiteParameter("ID", ID));
-                DB_Bridge.Instance.ExecuteNonQuery(cmd);
+                return DB_Bridge.Instance.ExecuteNonQuery(cmd);
             }
-        }        
+            return false;
+        }
     }
 }

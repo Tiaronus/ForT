@@ -66,9 +66,9 @@ namespace KEngine.Classes
                                         COMMIT;";
                     cmd.CommandType = CommandType.Text;
                     cmd.ExecuteNonQuery();
-                    conn.Close();                        
+                    conn.Close();
                 }
-            }            
+            }
             return csb.ToString();
 
         }
@@ -121,7 +121,7 @@ namespace KEngine.Classes
             cmd.CommandText = q;
             return cmd.ExecuteReader();
         }
-        
+
         public void ExecuteNonQuery(string q)
         {
             SQLiteCommand cmd = Conn.CreateCommand();
@@ -131,11 +131,27 @@ namespace KEngine.Classes
             t.Commit();
         }
 
-        public void ExecuteNonQuery(SQLiteCommand cmd)
+        public bool ExecuteNonQuery(SQLiteCommand cmd)
         {
+            bool answer = false;
             SQLiteTransaction t = Conn.BeginTransaction();
-            cmd.ExecuteNonQuery();
-            t.Commit();
+            try
+            {
+                cmd.ExecuteNonQuery();
+                t.Commit();
+                answer = true;
+            }
+            catch (SQLiteException sex)
+            {
+                KCore.ShowKError(sex.Message);
+                t.Rollback();
+            }
+            catch (Exception ex)
+            {
+                KCore.ShowKError(ex.Message);
+                t.Rollback();
+            }
+            return answer;
         }
 
         public SQLiteCommand CreateCommand()
